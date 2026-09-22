@@ -1,9 +1,27 @@
-// Наш упрощенный список товаров
-let products = [
-    { id: 1, title: "Телефон", price: 50000 },
-    { id: 2, title: "Пылесос", price: 15000 },
-    { id: 3, title: "Ноутбук", price: 90000 },
-    { id: 4, title: "Чайник", price: 3000 }
-];
+'use strict';
+const { Model } = require('sequelize');
 
-module.exports = products;
+module.exports = (sequelize, DataTypes) => {
+  class Product extends Model {
+    static associate(models) {
+      // Здесь прописываются связи с другими таблицами (если будут)
+    }
+  }
+
+  Product.init({
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    price: {
+      type: DataTypes.FLOAT,
+      allowNull: false
+    }
+  }, {
+    sequelize,
+    modelName: 'Product',
+    tableName: 'Products' // Имя таблицы в PostgreSQL
+  });
+
+  return Product;
+};

@@ -1,63 +1,73 @@
-let products = require('../models/productModel');
+const { Product } = require('../models');
 
-// Показать весь список
-exports.getAll = (req, res) => {
-    res.json(products);
-};
-
-// Показать один товар по ID
-exports.getOne = (req, res) => {
-    const id = parseInt(req.params.id);
-    const item = products.find(p => p.id === id);
-
-    if (item) {
-        res.json(item);
-    } else {
-        res.status(404).json({ error: "Товар не найден" });
+// Определение контроллеров для работы с БД
+const productController = {
+  // GET /api/products — Получение всех товаров
+  getAll: async (req, res, next) => {
+    try {
+      const products = await Product.findAll();
+      res.json(products);
+    } catch (error) {
+      next(error);
     }
-};
+  },
 
-// Добавить новый товар (например, через Postman)
-exports.create = (req, res) => {
-    const { title, price } = req.body;
-
-    if (!title || !price) {
-        return res.status(400).json({ error: "Укажите название и цену товара" });
+  // GET /api/products/:id — Получение одного товара
+  getOne: async (req, res, next) => {
+    try {
+      const product = await Product.findByPk(req.params.id);
+      if (!product) {
+        return res.status(404).json({ message: 'Товар не найден' });
+      }
+      res.json(product);
+    } catch (error) {
+      next(error);
     }
+  },
 
-    const newItem = {
-        id: products.length > 0 ? products[products.length - 1].id + 1 : 1,
-        title,
-        price
-    };
-
-    products.push(newItem);
-    res.status(201).json(newItem);
-};
-
-// Обновить данные товара
-exports.update = (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = products.findIndex(p => p.id === id);
-
-    if (index !== -1) {
-        // Обновляем только те поля, которые прислали
-        products[index] = { ...products[index], ...req.body, id };
-        res.json(products[index]);
-    } else {
-        res.status(404).json({ error: "Нечего обновлять: товар не найден" });
+  // POST /api/products — Создание нового товара
+  create: async (req, res, next) => {
+    try {
+      const { name, url, currentPrice, discountPercent } = req.body;
+      const newProduct = await Product.create({ name, url, currentPrice, discountPercent });
+      res.status(201).json(newProduct);
+    } catch (error) {
+      next(error);
     }
-};
+  },
 
-// Удалить товар из списка
-exports.remove = (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = products.findIndex(p => p.id === id);
+  // PUT /api/products/:id — Обновление товара
+  update: async (req, res, next) => {
+    try {
+      const { name, url, currentPrice, discountPercent } = req.body;
+      const [updatedCount] = await Product.update(
+        { name, url, currentPrice, discountPercent },
+        { where: { id: req.params.id } }
+      );
 
-    if (index !== -1) {
-        products.splice(index, 1);
-        res.json({ message: "Товар успешно удален" });
-    } else {
-        res.status(404).json({ error: "Товар не найден" });
+      if (updatedCount === 0) {
+        return res.status(404).json({ message: 'Товар не найден' });
+      }
+
+      const updatedProduct = await Product.findByPk(req.params.id);
+      res.json(updatedProduct);
+    } catch (error) {
+      next(error);
     }
+  },
+
+  // DELETE /api/products/:id — Удаление товара
+  remove: async (req, res, next) => {
+    try {
+      const deletedCount = await Product.destroy({ where: { id: req.params.id } });
+      if (deletedCount === 0) {
+        return res.status(404).json({ message: 'Товар не найден' });
+      }
+      res.json({ message: 'Товар успешно удален из базы данных' });
+    } catch (error) {
+      next(error);
+    }
+  }
 };
+
+module.exports = productController;
