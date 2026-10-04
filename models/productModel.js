@@ -4,7 +4,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Product extends Model {
     static associate(models) {
-      // Здесь прописываются связи с другими таблицами (если будут)
+
     }
   }
 
@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Product',
-    tableName: 'Products' // Имя таблицы в PostgreSQL
+    tableName: 'Products' 
   });
 
   return Product;

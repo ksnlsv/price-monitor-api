@@ -1,8 +1,8 @@
 const { Product } = require('../models');
 
-// Определение контроллеров для работы с БД
+
 const productController = {
-  // GET /api/products — Получение всех товаров
+  
   getAll: async (req, res, next) => {
     try {
       const products = await Product.findAll();
@@ -12,7 +12,7 @@ const productController = {
     }
   },
 
-  // GET /api/products/:id — Получение одного товара
+  
   getOne: async (req, res, next) => {
     try {
       const product = await Product.findByPk(req.params.id);
@@ -25,23 +25,27 @@ const productController = {
     }
   },
 
-  // POST /api/products — Создание нового товара
+  
   create: async (req, res, next) => {
     try {
-      const { name, url, currentPrice, discountPercent } = req.body;
-      const newProduct = await Product.create({ name, url, currentPrice, discountPercent });
+      const { title, price, category } = req.body;
+      const newProduct = await Product.create({
+        title,
+        price,
+        category: category || 'general'
+      });
       res.status(201).json(newProduct);
     } catch (error) {
       next(error);
     }
   },
 
-  // PUT /api/products/:id — Обновление товара
+  
   update: async (req, res, next) => {
     try {
-      const { name, url, currentPrice, discountPercent } = req.body;
+      const { title, price, category } = req.body;
       const [updatedCount] = await Product.update(
-        { name, url, currentPrice, discountPercent },
+        { title, price, category },
         { where: { id: req.params.id } }
       );
 
@@ -56,7 +60,7 @@ const productController = {
     }
   },
 
-  // DELETE /api/products/:id — Удаление товара
+  
   remove: async (req, res, next) => {
     try {
       const deletedCount = await Product.destroy({ where: { id: req.params.id } });
