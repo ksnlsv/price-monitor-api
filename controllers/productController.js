@@ -1,18 +1,29 @@
 const { Product } = require('../models');
-
+const { Op } = require('sequelize');
 
 const productController = {
   
   getAll: async (req, res, next) => {
     try {
-      const products = await Product.findAll();
+      const { search } = req.query; // Ловим параметр поиска из URL (например, ?search=телефон)
+      
+      let condition = {};
+      if (search) {
+        // Ищем товары, у которых title содержит введенный текст (регистронезависимо)
+        condition = {
+          title: {
+            [Op.iLike]: `%${search}%` 
+          }
+        };
+      }
+
+      const products = await Product.findAll({ where: condition });
       res.json(products);
     } catch (error) {
       next(error);
     }
   },
 
-  
   getOne: async (req, res, next) => {
     try {
       const product = await Product.findByPk(req.params.id);
@@ -25,14 +36,16 @@ const productController = {
     }
   },
 
-  
   create: async (req, res, next) => {
     try {
-      const { title, price, category } = req.body;
+      const { title, price, category, url, image, status } = req.body;
       const newProduct = await Product.create({
         title,
         price,
-        category: category || 'general'
+        category: category || 'Электроника',
+        url,
+        image,
+        status: status || 'активен'
       });
       res.status(201).json(newProduct);
     } catch (error) {
@@ -40,12 +53,11 @@ const productController = {
     }
   },
 
-  
   update: async (req, res, next) => {
     try {
-      const { title, price, category } = req.body;
+      const { title, price, category, url, image, status } = req.body;
       const [updatedCount] = await Product.update(
-        { title, price, category },
+        { title, price, category, url, image, status },
         { where: { id: req.params.id } }
       );
 
@@ -60,7 +72,6 @@ const productController = {
     }
   },
 
-  
   remove: async (req, res, next) => {
     try {
       const deletedCount = await Product.destroy({ where: { id: req.params.id } });

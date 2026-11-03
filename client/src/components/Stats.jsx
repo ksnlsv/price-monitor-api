@@ -8,10 +8,22 @@ export default function Stats({ products }) {
 
   return (
     <div className="stats-panel">
-      <div className="stat-item"> Всего товаров: <strong>{total}</strong></div>
-      <div className="stat-item"> Активных: <strong>{activeCount}</strong></div>
-      <div className="stat-item"> На паузе: <strong>{pausedCount}</strong></div>
-      <div className="stat-item"> Средняя цена: <strong>{Number(avgPrice).toLocaleString()} ₽</strong></div>
+      <div className="stat-item">
+        <span className="stat-label">Всего позиций</span>
+        <span className="stat-value">{total}</span>
+      </div>
+      <div className="stat-item">
+        <span className="stat-label">Активных парсеров</span>
+        <span className="stat-value">{activeCount}</span>
+      </div>
+      <div className="stat-item">
+        <span className="stat-label">На паузе</span>
+        <span className="stat-value">{pausedCount}</span>
+      </div>
+      <div className="stat-item">
+        <span className="stat-label">Средняя цена</span>
+        <span className="stat-value">{Number(avgPrice).toLocaleString()} ₽</span>
+      </div>
     </div>
   );
 }
