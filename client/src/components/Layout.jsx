@@ -42,35 +42,28 @@ export const Layout = ({ children, activeTab, setActiveTab, darkMode, setDarkMod
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Кнопка переключения темы */}
           <button onClick={() => setDarkMode(!darkMode)} className="p-2 text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 rounded-lg">
             {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
 
-          <div className="relative">
-            <button onClick={() => setNotificationsOpen(!notificationsOpen)} className="p-2 text-neutral-500 hover:text-neutral-900 rounded-lg relative">
-              <Bell className="w-4 h-4" />
-              {unreadCount > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-600 rounded-full"></span>}
-            </button>
-
-            {notificationsOpen && (
-              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-xl py-2 z-50">
-                <div className="flex items-center justify-between px-4 py-2 border-b border-neutral-100 dark:border-neutral-800 text-xs font-semibold">
-                  <span>Уведомления</span>
-                  <button onClick={onClearNotifications} className="text-neutral-400">Очистить</button>
-                </div>
-                <div className="max-h-64 overflow-y-auto">
-                  {notifications.length === 0 ? <p className="text-xs text-neutral-400 text-center py-4">Нет новых уведомлений</p> :
-                    notifications.map(n => (
-                      <div key={n.id} className="px-4 py-3 border-b border-neutral-50 dark:border-neutral-800/50 text-xs">
-                        <p className="font-medium text-neutral-900 dark:text-neutral-100">{n.title}</p>
-                        <p className="text-neutral-500 mt-0.5">{n.description}</p>
-                      </div>
-                    ))
-                  }
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Кнопка Входа / Профиль для вида */}
+          <button 
+            onClick={() => {
+              if (localStorage.getItem('token')) {
+                localStorage.removeItem('token');
+                window.location.reload();
+              } else {
+                // Открываем модалку входа
+                const event = new CustomEvent('open-auth-modal');
+                window.dispatchEvent(event);
+              }
+            }}
+            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors flex items-center gap-1.5"
+          >
+            <span className       ="w-2 h-2 rounded-full bg-emerald-500"></span>
+            {localStorage.getItem('token') ? 'Выйти ' : 'Войти'}
+          </button>     
         </div>
       </header>
 

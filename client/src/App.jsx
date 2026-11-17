@@ -9,6 +9,7 @@ import { NotificationsView } from './views/NotificationsView';
 import { SettingsView } from './views/SettingsView';
 import { fetchProducts, createProduct, updateProduct, deleteProduct } from './api';
 import { ProductDetailModal } from './components/ProductDetailModal';
+import { AuthModal } from './components/AuthModal';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -34,7 +35,7 @@ export default function App() {
   ]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Управление темой
+  
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -78,7 +79,15 @@ export default function App() {
     }
   }, []);
 
-  // Поиск с Debounce (Дополнительное улучшение)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+    useEffect(() => {
+  const handleOpen = () => setIsAuthModalOpen(true);
+    window.addEventListener('open-auth-modal', handleOpen);
+    return () => window.removeEventListener('open-auth-modal', handleOpen);
+  }, []);
+
+ 
   useEffect(() => {
     const handler = setTimeout(() => {
       loadProducts(searchQuery);
@@ -233,6 +242,16 @@ export default function App() {
         product={selectedProduct} 
         onClose={() => setSelectedProduct(null)} 
       />
+
+      <AuthModal 
+     isOpen={isAuthModalOpen} 
+     onClose={() => setIsAuthModalOpen(false)} 
+     onLoginSuccess={() => {
+       // Перезагружаем список или обновляем статус
+       loadProducts();
+     }}
+   />
+   
     </div>
   );
 }
